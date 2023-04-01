@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import pandas as pd
 
 import evaluation
@@ -22,7 +23,9 @@ def get_prices() -> pd.DataFrame:
 
 def print_results(positions: pd.DataFrame, prices: pd.DataFrame) -> None:
     results = evaluation.calc_key_figures(positions=positions, prices=prices)
-    print(*[f'{k}: {v:.2f} ' for k, v in results.items()], sep='\n')
+    # pad k with spaces to make it 10 chars long
+    print(*[f'{k:15}: {v}' for k, v in results.items()], sep='\n')
+    print()
 
 
 def get_args() -> argparse.Namespace:
@@ -94,7 +97,7 @@ def test_all_strategies() -> None:
             optimization_pos = optimization_model(ret=returns, window=window)
             optimization_pos.to_csv(filename)
         total_pos += normalize_positions(optimization_pos)
-        print('Sigma optimization model:')
+        print('Optimization model:')
         print_results(positions=optimization_pos, prices=prices)
 
     if args.linreversion:
@@ -138,6 +141,11 @@ def test_all_strategies() -> None:
     print('--------------------------------')
     print('Total:')
     print_results(positions=total_pos, prices=prices)
+
+    total_pos.to_csv(SAVE_DIR / 'total_pos.csv')
+
+    evaluation.plot_key_figures(positions=total_pos, prices=prices)
+    plt.show()
 
 
 if __name__ == '__main__':
