@@ -1,29 +1,19 @@
-# %%
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
-import evaluation
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 
-# %%
-prices = pd.read_csv('hackathon_prices_dev.csv', index_col='dates', parse_dates=['dates'])
 
-# Compute returns
-ret = prices.ffill().diff()
-
-# %%
-def minreversion_model(prices: pd.DataFrame, rev_window=50, boundry1=0.05, boundry2=0.025):
-
+def linreversion_model(prices: pd.DataFrame, rev_window=50, boundry1=0.05, boundry2=0.025):
     times = np.arange(rev_window).reshape(-1, 1)
     n_assets = prices.shape[1]
-    #boundry = np.ones(n_assets) * boundry
+    # boundry = np.ones(n_assets) * boundry
     open = np.zeros(n_assets, dtype=bool)
 
     def minreversion(price_window, open, prev_pos, boundry1, boundry2):
         model = LinearRegression().fit(times[:-1], price_window[:-1])
 
-        pred = model.predict(np.array([rev_window-1]).reshape(-1, 1))
+        pred = model.predict(np.array([rev_window - 1]).reshape(-1, 1))
         actual = price_window[-1]
         diff = ((actual - pred) / actual).flatten()
 
@@ -45,18 +35,8 @@ def minreversion_model(prices: pd.DataFrame, rev_window=50, boundry1=0.05, bound
     pos = pd.DataFrame(np.nan, index=prices.index, columns=prices.columns)
 
     for t in tqdm(range(rev_window + 1, prices.shape[0])):
-
-        price_window = prices.iloc[t-rev_window:t].values
-        prev_pos = pos.iloc[t-1].values
+        price_window = prices.iloc[t - rev_window : t].values
+        prev_pos = pos.iloc[t - 1].values
         pos.iloc[t], open = minreversion(price_window, open, prev_pos, boundry1, boundry2)
 
     return pos
-
-# %%
-for boundry1 in [2*0.08]:
-    for boundry2 in [2*0.05]:
-        pos = minreversion_model(prices, rev_window=200, boundry1=boundry1, boundry2=boundry2)
-        results = evaluation.calc_key_figures(positions=pos, prices=prices)
-        print(f'boundry1: {boundry1:.2f}, boundry2: {boundry2:.2f}, sharpe: {results["sharpe"]:.2f}')
-
-# %%
