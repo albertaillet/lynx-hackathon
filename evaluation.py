@@ -116,9 +116,7 @@ def calc_key_figures(
     positions = positions.shift(1)
 
     returns = prices.diff()
-    volatility = (
-        returns.rolling(window=100, min_periods=10).std().ffill().shift(1)
-    )
+    volatility = returns.rolling(window=100, min_periods=10).std().ffill().shift(1)
 
     # Align indices and forward fill missing positions
     start = max([returns.index[0], positions.index[0]])
@@ -205,7 +203,8 @@ def calc_key_figures(
         long_positions[long_positions < 0] = 0
         result["rolling_position_bias"] = (
             (
-                2 * long_positions.sum(axis=1, min_count=1)
+                2
+                * long_positions.sum(axis=1, min_count=1)
                 / norm_positions.abs().sum(axis=1, min_count=1)
                 - 1
             )
