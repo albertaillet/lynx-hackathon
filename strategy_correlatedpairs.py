@@ -37,7 +37,7 @@ def correlated_pairs_positions(t, prices, ret_window, correlated_cluster=get_cor
     
     return unadj_pos
 
-def correlated_pairs_model(prices, lookback, vol_window=100):
+def correlated_pairs_model(prices, lookback=200, vol_window=100):
     ret = prices.ffill().diff()
     pos = pd.DataFrame(np.nan, index=ret.index, columns=ret.columns)
     
