@@ -3,3 +3,5 @@ numpy
 pre-commit
 ipykernel
 matplotlib
+ipympl
+scipy
