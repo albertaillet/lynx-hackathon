@@ -23,7 +23,6 @@ def get_prices() -> pd.DataFrame:
 
 def print_results(positions: pd.DataFrame, prices: pd.DataFrame) -> None:
     results = evaluation.calc_key_figures(positions=positions, prices=prices)
-    # pad k with spaces to make it 10 chars long
     print(*[f'{k:15}: {v}' for k, v in results.items()], sep='\n')
     print()
 
@@ -57,7 +56,7 @@ def test_all_strategies() -> None:
         # Test trend model
         trend_window = 250
         vol_window = 170
-        filename = SAVE_DIR / f'trend_pos_{250=}_{170=}.csv'
+        filename = SAVE_DIR / f'trend_pos_{trend_window=}_{vol_window=}.csv'
         if filename.exists():
             trend_pos = pd.read_csv(filename, index_col='dates', parse_dates=['dates'])
         else:
@@ -90,8 +89,8 @@ def test_all_strategies() -> None:
 
         # Test sigma optimization model
         window = 5
-        filename = SAVE_DIR / f'optimization_{window=}.csv'
-        if Path(filename).exists():
+        filename = SAVE_DIR / f'optimization_pos_{window=}.csv'
+        if filename.exists():
             optimization_pos = pd.read_csv(filename, index_col='dates', parse_dates=['dates'])
         else:
             optimization_pos = optimization_model(ret=returns, window=window)
@@ -107,8 +106,8 @@ def test_all_strategies() -> None:
         rev_window = 100
         boundry1 = 0.05
         boundry2 = 0.025
-        filename = SAVE_DIR / f'linreversion_{rev_window=}_{boundry1=}_{boundry2=}.csv'
-        if Path(filename).exists():
+        filename = SAVE_DIR / f'linreversion_pos_{rev_window=}_{boundry1=}_{boundry2=}.csv'
+        if filename.exists():
             linreversion_pos = pd.read_csv(filename, index_col='dates', parse_dates=['dates'])
         else:
             linreversion_pos = linreversion_model(
@@ -126,8 +125,8 @@ def test_all_strategies() -> None:
         T1 = 3
         T2 = 60
         vol_window = 100
-        filename = SAVE_DIR / f'movingaverage_{T1=}_{T2=}_{vol_window=}.csv'
-        if Path(filename).exists():
+        filename = SAVE_DIR / f'movingaverage_pos_{T1=}_{T2=}_{vol_window=}.csv'
+        if filename.exists():
             movingaverage_pos = pd.read_csv(filename, index_col='dates', parse_dates=['dates'])
         else:
             movingaverage_pos = movingaverage_model(
